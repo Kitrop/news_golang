@@ -105,3 +105,58 @@ func Logout(c *gin.Context) {
 	c.SetCookie("accessToken", "", -1, "/", "localhost", false, true)
 	c.JSON(http.StatusNoContent, gin.H{})
 }
+
+func changePassword(c *gin.Context) {
+	type changeUserPassword struct {
+		OldPassword string `json:"oldPassword"`
+		NewPassword string `json:"newPassword"`
+	}
+
+	var input changeUserPassword
+	var user models.User
+		
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	accessToken, err := c.Cookie("accessToken")
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	dataJWT, err := utils.ValidateJWT(accessToken)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if !utils.IsStrongPassword(input.NewPassword) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "new password is weak"})
+		return
+	}
+
+	result := config.DB.Where("email = ?", dataJWT.Email).First(&user)
+
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": result.Error.Error()})
+		return
+	}
+
+	if (utils.CheckPasswordHash(input.OldPassword, user.Password)) {
+		newHashPassword, err := utils.HashPassword(input.NewPassword)
+
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		config.DB.Model(&user).Where("email = ?", dataJWT.Email).Update("password", newHashPassword)
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "new and old passwords do not match"})
+		return
+	}
+}
