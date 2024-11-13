@@ -10,9 +10,12 @@ import (
 func main() {
 	config.LoadEnv()
 	config.ConnectDB()
-	
+
 	r := gin.Default()
-	routes.RegisterUserRoutes(r)
+
+	api := r.Group("/api/v1")
+	routes.RegisterUserRoutes(api.Group("/users"))
+	routes.RegisterNewsRoutes(api.Group("/news"))
 
 	r.Run(":8080")
 }
