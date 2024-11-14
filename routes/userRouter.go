@@ -1,14 +1,15 @@
 package routes
 
 import (
-	"news-go/controller"
 	"github.com/gin-gonic/gin"
+	"news-go/controller"
+	"news-go/middleware"
 )
 
 func RegisterUserRoutes(router *gin.RouterGroup) {
-	router.POST("/create", controller.CreateUserController)
-	router.GET("/all", controller.GetAllUsersController)
-	router.POST("/login", controller.LoginController)
-	router.GET("/logout", controller.LogoutController)
-	router.POST("/change-password", controller.ChangePasswordController)
+	router.POST("/create", middleware.UnAuthorized, controller.CreateUserController)
+	router.GET("/all", middleware.Autification, controller.GetAllUsersController)
+	router.POST("/login", middleware.UnAuthorized, controller.LoginController)
+	router.GET("/logout", middleware.Autification, controller.LogoutController)
+	router.POST("/change-password", middleware.Autification, controller.ChangePasswordController)
 }

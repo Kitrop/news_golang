@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"log"
 	"news-go/config"
 	"news-go/routes"
 
@@ -13,9 +15,13 @@ func main() {
 
 	r := gin.Default()
 
-	api := r.Group("/api/v1")
-	routes.RegisterUserRoutes(api.Group("/users"))
-	routes.RegisterNewsRoutes(api.Group("/news"))
+	routes.RegisterUserRoutes(r.Group("/users"))
+	routes.RegisterNewsRoutes(r.Group("/news"))
 
-	r.Run(":8080")
+	err := r.Run(":8080")
+
+	if err != nil {
+		errorString := fmt.Sprintf("Server not started by error: %s", err.Error())
+		log.Fatal(errorString)
+	}
 }
