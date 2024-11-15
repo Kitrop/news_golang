@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"errors"
+	"fmt"
 	"news-go/config"
 	"news-go/models"
 
@@ -9,8 +10,16 @@ import (
 )
 
 // CreateUserInDB создает пользователя в базе данных
-func CreateUserInDB(user *models.User) error {
-	return config.DB.Create(user).Error
+func CreateUserInDB(user *models.User) (*models.User, error) {
+	newUser := config.DB.Create(user)
+
+	if newUser.Error != nil {
+		return user, newUser.Error
+	}
+
+	fmt.Println(user.ID)
+
+	return user, nil
 }
 
 // FindAllUsers возвращает всех пользователей из базы данных

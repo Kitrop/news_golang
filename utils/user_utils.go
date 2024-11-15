@@ -38,7 +38,7 @@ func IsStrongPassword(password string) bool {
 	const minLength = 8
 
 	if len(password) < minLength {
-			return false
+		return false
 	}
 
 	hasUpper := false
@@ -47,16 +47,16 @@ func IsStrongPassword(password string) bool {
 	hasSpecial := false
 
 	for _, ch := range password {
-			switch {
-			case unicode.IsUpper(ch):
-					hasUpper = true
-			case unicode.IsLower(ch):
-					hasLower = true
-			case unicode.IsDigit(ch):
-					hasDigit = true
-			case regexp.MustCompile(`[^a-zA-Z0-9]`).MatchString(string(ch)):
-					hasSpecial = true
-			}
+		switch {
+		case unicode.IsUpper(ch):
+			hasUpper = true
+		case unicode.IsLower(ch):
+			hasLower = true
+		case unicode.IsDigit(ch):
+			hasDigit = true
+		case regexp.MustCompile(`[^a-zA-Z0-9]`).MatchString(string(ch)):
+			hasSpecial = true
+		}
 	}
 
 	return hasUpper && hasLower && hasDigit && hasSpecial
@@ -94,21 +94,4 @@ func ValidateUserInput(input models.User) error {
 		return fmt.Errorf("this password is not strong")
 	}
 	return nil
-}
-
-func CreateUserInDB(user *models.User) error {
-	result := config.DB.Create(user)
-	return result.Error
-}
-
-func FindUserInDB(username string) (*models.User, error) {
-	var user models.User
-	
-	result := config.DB.First(&user, "username = ?", username)
-	
-	if err := result.Error; errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, fmt.Errorf("this password is not strong")
-	}
-
-	return &user, nil
 }

@@ -9,17 +9,19 @@ import (
 )
 
 type Claims struct {
+	ID       uint `json:"id"`
 	Username string `json:"username"`
-	Email string `json:"email"`
-	Role string `json:"role"`
+	Email    string `json:"email"`
+	Role     string `json:"role"`
 	jwt.StandardClaims
 }
 
-func GenerateJWT(username, email, role string) (string, error) {
+func GenerateJWT(id uint, username, email, role string) (string, error) {
 	claims := &Claims{
+		ID:       id,
 		Username: username,
-		Email: email,
-		Role: role,
+		Email:    email,
+		Role:     role,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
 		},
@@ -32,15 +34,15 @@ func GenerateJWT(username, email, role string) (string, error) {
 
 func ValidateJWT(tokenString string) (*Claims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-			return os.Getenv("JWT_KEY"), nil
+		return os.Getenv("JWT_KEY"), nil
 	})
 	if err != nil {
-			return nil, err
+		return nil, err
 	}
 
 	if claims, ok := token.Claims.(*Claims); ok && token.Valid {
-			return claims, nil
+		return claims, nil
 	} else {
-			return nil, fmt.Errorf("invalid token")
+		return nil, fmt.Errorf("invalid token")
 	}
 }

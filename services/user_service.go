@@ -20,14 +20,16 @@ func CreateUser(input *models.User) (map[string]string, string, error) {
 		return nil, "", errors.New("invalid password, try another input password")
 	}
 
-	// Создание нового пользователя
 	input.Password = hashPassword
-	if err := repositories.CreateUserInDB(input); err != nil {
+
+	// Создание нового пользователя
+	newUserData, err := repositories.CreateUserInDB(input)
+	if err != nil {
 		return nil, "", errors.New("failed to create user in database")
 	}
 
-	// Генерация JWT
-	accessToken, err := utils.GenerateJWT(input.Username, input.Email, string(input.Role))
+	accessToken, err := utils.GenerateJWT(newUserData.ID, newUserData.Username, newUserData.Email, string(newUserData.Role))
+
 	if err != nil {
 		return nil, "", errors.New("failed to generate JWT")
 	}
@@ -60,7 +62,7 @@ func LoginUser(username, password string) (map[string]string, string, error) {
 	}
 
 	// Генерация JWT
-	accessToken, err := utils.GenerateJWT(user.Username, user.Email, string(user.Role))
+	accessToken, err := utils.GenerateJWT(user.ID, user.Username, user.Email, string(user.Role))
 	if err != nil {
 		return nil, "", errors.New("failed to generate JWT")
 	}

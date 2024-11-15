@@ -42,5 +42,5 @@ func UnAuthorized(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusUnauthorized, gin.H{"error": "user already authorized"})
+	c.JSON(http.StatusBadRequest, gin.H{"error": "user already authorized"})
 }
