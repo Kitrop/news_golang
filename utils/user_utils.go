@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"errors"
 	"fmt"
 	"news-go/config"
 	"news-go/models"
@@ -9,43 +8,34 @@ import (
 	"unicode"
 
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 )
 
-func CheckEmailExist(email string) bool {
-	var findByEmail = models.User{Email: email}
-	result := config.DB.First(&findByEmail)
 
-	if err := result.Error; errors.Is(err, gorm.ErrRecordNotFound) {
-		return true
+
+func CheckEmailExist(email string) (bool, error) {
+	var count int64
+	err := config.DB.Model(&models.User{}).Where("email = ?", email).Count(&count).Error
+	if err != nil {
+			return false, err
 	}
-
-	return false
+	return count > 0, nil
 }
 
-func CheckUsernameExist(username string) bool {
-	var findByUsername = models.User{Username: username}
-	result := config.DB.First(&findByUsername)
-
-	if err := result.Error; errors.Is(err, gorm.ErrRecordNotFound) {
-		return true
+func CheckUsernameExist(username string) (bool, error) {
+	var count int64
+	err := config.DB.Model(&models.User{}).Where("username = ?", username).Count(&count).Error
+	if err != nil {
+			return false, err
 	}
-
-	return false
+	return count > 0, nil
 }
 
+//Improved password strength check with comments
 func IsStrongPassword(password string) bool {
-	const minLength = 8
-
-	if len(password) < minLength {
+	if len(password) < 8 {
 		return false
 	}
-
-	hasUpper := false
-	hasLower := false
-	hasDigit := false
-	hasSpecial := false
-
+	hasUpper, hasLower, hasDigit, hasSpecial := false, false, false, false
 	for _, ch := range password {
 		switch {
 		case unicode.IsUpper(ch):
@@ -58,7 +48,6 @@ func IsStrongPassword(password string) bool {
 			hasSpecial = true
 		}
 	}
-
 	return hasUpper && hasLower && hasDigit && hasSpecial
 }
 
@@ -68,30 +57,45 @@ func HashPassword(password string) (string, error) {
 }
 
 func CheckPasswordHash(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)) == nil
 }
 
+//Improved email validation with a compiled regex outside function
+var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+
 func IsValidEmail(email string) bool {
-	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
-
-	re := regexp.MustCompile(emailRegex)
-
-	return re.MatchString(email)
+	return emailRegex.MatchString(email)
 }
 
 func ValidateUserInput(input models.User) error {
-	if CheckUsernameExist(input.Username) {
-		return fmt.Errorf("this username already exists")
+	usernameExists, err := CheckUsernameExist(input.Username)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return fmt.Errorf("some error username")
 	}
+
+	if usernameExists {
+		return fmt.Errorf("username %s already exists", input.Username)
+	}
+
 	if !IsValidEmail(input.Email) {
-		return fmt.Errorf("email is invalid")
+		return fmt.Errorf("invalid email address")
 	}
-	if CheckEmailExist(input.Email) {
-		return fmt.Errorf("this email already exists")
+
+	emailExists, err := CheckEmailExist(input.Email)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return fmt.Errorf("some error email")
 	}
+
+	if emailExists {
+		return fmt.Errorf("email %s already exists", input.Email)
+	}
+
 	if !IsStrongPassword(input.Password) {
-		return fmt.Errorf("this password is not strong")
+		return fmt.Errorf("password is not strong enough")
 	}
 	return nil
 }

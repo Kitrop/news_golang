@@ -9,7 +9,7 @@ import (
 )
 
 type Claims struct {
-	ID       uint `json:"id"`
+	ID       uint   `json:"id"`
 	Username string `json:"username"`
 	Email    string `json:"email"`
 	Role     string `json:"role"`
@@ -28,13 +28,13 @@ func GenerateJWT(id uint, username, email, role string) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	return token.SignedString(os.Getenv("JWT_KEY"))
+	fmt.Println(os.Getenv("JWT_KEY"))
+	return token.SignedString([]byte(os.Getenv("JWT_KEY")))
 }
 
 func ValidateJWT(tokenString string) (*Claims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-		return os.Getenv("JWT_KEY"), nil
+		return []byte(os.Getenv("JWT_KEY")), nil
 	})
 	if err != nil {
 		return nil, err

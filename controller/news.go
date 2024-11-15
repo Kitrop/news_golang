@@ -20,14 +20,18 @@ func GetAllNewsController(c *gin.Context) {
 
 // CreateNewsController создает новость
 func CreateNewsController(c *gin.Context) {
-	var input models.News
+	var input models.News // Правильно, указатель!
+
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err := services.CreateNews(&input); err != nil {
+
+	news := &models.News{Text: input.Text}
+
+	if err := services.CreateNews(news); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{"message": "News created", "data": input})
+	c.JSON(http.StatusCreated, gin.H{"message": "News created", "data": news})
 }

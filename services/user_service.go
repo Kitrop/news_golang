@@ -31,7 +31,7 @@ func CreateUser(input *models.User) (map[string]string, string, error) {
 	accessToken, err := utils.GenerateJWT(newUserData.ID, newUserData.Username, newUserData.Email, string(newUserData.Role))
 
 	if err != nil {
-		return nil, "", errors.New("failed to generate JWT")
+		return nil, "", errors.New(err.Error())
 	}
 
 	// Возвращаем данные пользователя
@@ -64,7 +64,7 @@ func LoginUser(username, password string) (map[string]string, string, error) {
 	// Генерация JWT
 	accessToken, err := utils.GenerateJWT(user.ID, user.Username, user.Email, string(user.Role))
 	if err != nil {
-		return nil, "", errors.New("failed to generate JWT")
+		return nil, "", errors.New(err.Error())
 	}
 
 	userData := map[string]string{
