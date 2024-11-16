@@ -95,13 +95,13 @@ The application follows a clean, layered architecture:
 
 1. **Clone the repository**:  
   ```bash
-   git clone <repository_url>
+   git clone https://github.com/Kitrop/news_golang.git
   ```
 2. **Install Dependencies**:  
-   ```bash
+  ```bash
    go mod tidy
   ```
-3. **Install Dependencies**:
-   ```bash
+3. **Run the application**:  
+  ```bash
    go run main.go
   ```
