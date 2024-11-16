@@ -20,7 +20,7 @@ func GetAllNewsController(c *gin.Context) {
 
 // CreateNewsController создает новость
 func CreateNewsController(c *gin.Context) {
-	var input models.News // Правильно, указатель!
+	var input models.News
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

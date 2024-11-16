@@ -17,6 +17,7 @@ func main() {
 
 	routes.RegisterUserRoutes(r.Group("/users"))
 	routes.RegisterNewsRoutes(r.Group("/news"))
+	routes.RegisterAdminRoutes(r.Group("/admin"))
 
 	err := r.Run(":8080")
 
