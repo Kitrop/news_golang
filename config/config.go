@@ -46,4 +46,10 @@ func ConnectDB() {
 	if err != nil {
 		log.Fatal("Could not create migrate models: User", err)
 	}
+
+	err = DB.AutoMigrate(&models.Client_metadata{})
+
+	if err != nil {
+		log.Fatal("Could not create migrate models: Client_metadata", err)
+	}
 }

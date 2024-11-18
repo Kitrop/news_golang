@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"news-go/models"
 	"news-go/services"
@@ -15,6 +16,9 @@ func GetAllNewsController(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	fmt.Println(c.ClientIP())
+
 	c.JSON(http.StatusOK, gin.H{"data": news})
 }
 

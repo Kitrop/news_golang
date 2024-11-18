@@ -47,7 +47,8 @@ func GetAllUsersController(c *gin.Context) {
 
 // LoginController аутентификация пользователя и выдача JWT
 func LoginController(c *gin.Context) {
-	var input models.User
+	var input models.UserLogin
+	
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
