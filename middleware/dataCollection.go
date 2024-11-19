@@ -36,7 +36,9 @@ func GetAllClientData(c *gin.Context) {
 		Device: device,
 	}
 
-	if err := config.DB.Create(&entry); err != nil {
-		log.Fatalf("Insert failed: %v", err)
+	if err := config.DB.Create(&entry).Error; err != nil {
+		log.Printf("Insert failed: %v", err)
+		c.JSON(500, gin.H{"error": "Failed to insert client metadata"})
+		return
 	}
 }

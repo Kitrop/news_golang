@@ -17,6 +17,7 @@ func main() {
 	r := gin.Default()
 
 	r.Use(middleware.GetAllClientData)
+	r.Use(middleware.PerformanceMonitor())
 	
 	routes.RegisterUserRoutes(r.Group("/users"))
 	routes.RegisterNewsRoutes(r.Group("/news"))

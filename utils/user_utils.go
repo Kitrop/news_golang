@@ -7,16 +7,16 @@ import (
 	"regexp"
 	"unicode"
 
-	"golang.org/x/crypto/bcrypt"
+	"github.com/matthewhartstonge/argon2"
 )
 
-
+var argon2Instance = argon2.DefaultConfig()
 
 func CheckEmailExist(email string) (bool, error) {
 	var count int64
 	err := config.DB.Model(&models.User{}).Where("email = ?", email).Count(&count).Error
 	if err != nil {
-			return false, err
+		return false, err
 	}
 	return count > 0, nil
 }
@@ -25,12 +25,12 @@ func CheckUsernameExist(username string) (bool, error) {
 	var count int64
 	err := config.DB.Model(&models.User{}).Where("username = ?", username).Count(&count).Error
 	if err != nil {
-			return false, err
+		return false, err
 	}
 	return count > 0, nil
 }
 
-//Improved password strength check with comments
+// Improved password strength check with comments
 func IsStrongPassword(password string) bool {
 	if len(password) < 8 {
 		return false
@@ -51,16 +51,27 @@ func IsStrongPassword(password string) bool {
 	return hasUpper && hasLower && hasDigit && hasSpecial
 }
 
+// HashPassword hashes the password using Argon2
 func HashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-	return string(bytes), err
+	hash, err := argon2Instance.HashEncoded([]byte(password))
+	if err != nil {
+		return "", fmt.Errorf("failed to hash password: %w", err)
+	}
+	return string(hash), nil
 }
 
+// CheckPasswordHash verifies the password against the Argon2 hash
 func CheckPasswordHash(password, hash string) bool {
-	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)) == nil
+	ok, err := argon2.VerifyEncoded([]byte(password), []byte(hash))
+
+	if err != nil {
+		return false
+	}
+
+	return ok
 }
 
-//Improved email validation with a compiled regex outside function
+// Improved email validation with a compiled regex outside function
 var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 
 func IsValidEmail(email string) bool {

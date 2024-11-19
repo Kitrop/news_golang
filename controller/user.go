@@ -75,8 +75,8 @@ func LogoutController(c *gin.Context) {
 // ChangePasswordController изменение пароля пользователя
 func ChangePasswordController(c *gin.Context) {
 	var input struct {
-		OldPassword string `json:"oldPassword"`
-		NewPassword string `json:"newPassword"`
+		OldPassword string `json:"oldPassword" binding:"required"`
+		NewPassword string `json:"newPassword" binding:"required"`
 	}
 
 	// Валидация входных данных
@@ -97,6 +97,5 @@ func ChangePasswordController(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
 	c.JSON(http.StatusOK, gin.H{"message": "Password changed successfully"})
 }

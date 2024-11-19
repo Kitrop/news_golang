@@ -52,4 +52,10 @@ func ConnectDB() {
 	if err != nil {
 		log.Fatal("Could not create migrate models: Client_metadata", err)
 	}
+
+	err = DB.AutoMigrate(&models.RequestMetric{})
+
+	if err != nil {
+		log.Fatal("Could not create migrate models: RequestMetric", err)
+	}
 }
