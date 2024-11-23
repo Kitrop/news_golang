@@ -11,7 +11,10 @@ import (
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
+var (
+	DB *gorm.DB
+	ClickDB *gorm.DB
+)
 
 func LoadEnv() {
 	err := godotenv.Load()
@@ -32,7 +35,7 @@ func ConnectDB() {
 
 	DB, err = gorm.Open(postgres.Open(dbURI), &gorm.Config{})
 	if err != nil {
-		log.Fatal("Could not connect to the database", err)
+			log.Fatal("Could not connect to the database", err)
 	}
 
 	err = DB.AutoMigrate(&models.News{})
