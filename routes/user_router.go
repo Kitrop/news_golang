@@ -6,6 +6,7 @@ import (
 	"news-go/middleware"
 )
 
+// RegisterUserRoutes registers routes for user management
 func RegisterUserRoutes(router *gin.RouterGroup) {
 	router.POST("/create", middleware.UnAuthorized, controller.CreateUserController)
 	router.GET("/all", middleware.Autification, controller.GetAllUsersController)

@@ -8,17 +8,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// CreateUserController создает нового пользователя
+// CreateUserController creates a new user
 func CreateUserController(c *gin.Context) {
 	var input models.User
 
-	// Валидация входных данных
+	// Validate input data
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Вызов сервиса для создания пользователя
+	// Call the service to create a user
 	user, accessToken, err := services.CreateUser(&input)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -34,7 +34,7 @@ func CreateUserController(c *gin.Context) {
 	})
 }
 
-// GetAllUsersController возвращает список всех пользователей
+// GetAllUsersController returns a list of all users
 func GetAllUsersController(c *gin.Context) {
 	users, err := services.GetAllUsers()
 	if err != nil {
@@ -45,7 +45,7 @@ func GetAllUsersController(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": users})
 }
 
-// LoginController аутентификация пользователя и выдача JWT
+// LoginController authenticates the user and issues a JWT
 func LoginController(c *gin.Context) {
 	var input models.UserLogin
 	
@@ -54,7 +54,7 @@ func LoginController(c *gin.Context) {
 		return
 	}
 
-	// Логика аутентификации через сервис
+	// Authentication logic through the service
 	user, accessToken, err := services.LoginUser(input.Username, input.Password)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
@@ -64,18 +64,19 @@ func LoginController(c *gin.Context) {
 	// services.CreateNewSession(number.(user["userID"]), c.ClientIP(), c.Request.Header.Get("User-Agent"))
 
 	// Установка JWT в cookies
+	// Setting JWT in cookies
 	c.SetCookie("accessToken", accessToken, 360000, "/", "localhost", false, true)
 	c.JSON(http.StatusOK, gin.H{"data": user, "accessToken": accessToken})
 }
 
-// LogoutController удаляет accessToken из cookies
+// LogoutController removes the accessToken from cookies
 func LogoutController(c *gin.Context) {
 	c.SetCookie("accessToken", "", -1, "/", "localhost", false, true)
 	c.JSON(http.StatusNoContent, gin.H{"message": "Logged out successfully"})
 }
 
-// ChangePasswordController изменение пароля пользователя
-func ChangePasswordController(c *gin.Context) {
+// ChangePasswordController changes the user's password
+func ChangePasswordController(c *gin.Context) { 
 	var input struct {
 		OldPassword string `json:"oldPassword" binding:"required"`
 		NewPassword string `json:"newPassword" binding:"required"`
@@ -87,14 +88,14 @@ func ChangePasswordController(c *gin.Context) {
 		return
 	}
 
-	// Получение accessToken из cookies
+	// Get accessToken from cookies
 	accessToken, err := c.Cookie("accessToken")
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization required"})
 		return
 	}
 
-	// Вызов сервиса для смены пароля
+	// Call the service to change the password
 	if err := services.ChangeUserPassword(accessToken, input.OldPassword, input.NewPassword); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

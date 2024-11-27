@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// middleware для аутификации, проверяет наличие и валидность accessToken 
+// Middleware for authentication, checks if the accessToken exists and is valid 
 func Autification(c *gin.Context) {
 	accessToken, err := c.Cookie("accessToken")
 	if err != nil || accessToken == "" {
@@ -33,7 +33,7 @@ func Autification(c *gin.Context) {
 	c.Next()
 }
 
-// UnAuthorized middleware allows access only if no access token is present.
+// UnAuthorized middleware allows access only if no access token is present
 func UnAuthorized(c *gin.Context) {
 	accessToken, err := c.Cookie("accessToken")
 	if err == nil && accessToken != "" {

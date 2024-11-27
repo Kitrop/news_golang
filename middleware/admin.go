@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// middleware для проверки, того что пользователь является админом
+// Middleware to verify that the user is an admin
 func СheckIsAdmin(c *gin.Context) {
 	accessToken, err := c.Cookie("accessToken")
 	if err != nil || accessToken == "" {

@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Установка пользователю роли "BANNED", запрещая ему взаимодействовать с api
+// Setting the user's role to "BANNED", preventing them from interacting with the api
 func BanUser(c *gin.Context) {
 	var input models.User
 
@@ -27,7 +27,7 @@ func BanUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": message})
 }
 
-// Удаление новости для админа
+// Deleting news for the admin
 func DeleteNews(c *gin.Context) {
 	var input models.News
 

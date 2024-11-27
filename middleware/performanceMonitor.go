@@ -8,18 +8,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Middleware for collecting endpoints performance information
 func PerformanceMonitor() gin.HandlerFunc {
 	db := config.DB
 	return func(c *gin.Context) {
+		// Record the start time
 		startTime := time.Now()
 
-		// Выполняем запрос
+		// Execute the query
 		c.Next()
 
-		// Вычисляем время выполнения
+		// Calculate the execution time
 		duration := time.Since(startTime).Seconds() * 1000 // миллисекунды
 
-		// Сохраняем метрики в БД
+	// Save the metrics to the database
 		metric := models.RequestMetric{
 			Path:         c.FullPath(),
 			Method:       c.Request.Method,

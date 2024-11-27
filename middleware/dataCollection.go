@@ -9,9 +9,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/ua-parser/uap-go/uaparser"
 )
-func GetAllClientData(c *gin.Context) {
 
-	
+// Middleware for collecting user metadata
+func GetAllClientData(c *gin.Context) {
 	userAgent := c.Request.Header.Get("User-Agent")
 	parser := uaparser.NewFromSaved()
 	client := parser.Parse(userAgent)

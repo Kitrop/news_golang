@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GetAllNewsController возвращает все новости
+// GetAllNewsController returns all news
 func GetAllNewsController(c *gin.Context) {
 	news, err := services.GetAllNews()
 	if err != nil {
@@ -22,7 +22,7 @@ func GetAllNewsController(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": news})
 }
 
-// CreateNewsController создает новость
+// CreateNewsController creates a news
 func CreateNewsController(c *gin.Context) {
 	var input models.News
 

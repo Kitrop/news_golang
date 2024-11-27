@@ -5,7 +5,7 @@ import (
 	"news-go/models"
 )
 
-// GetAllNewsRepository возвращает все новости из БД
+// GetAllNewsRepository returns all news from the database
 func GetAllNewsRepository() ([]models.News, error) {
 	var news []models.News
 	result := config.DB.Find(&news)
@@ -15,7 +15,7 @@ func GetAllNewsRepository() ([]models.News, error) {
 	return news, nil
 }
 
-// CreateNewsRepository добавляет новую новость в БД
+// CreateNewsRepository adds a new news item to the database
 func CreateNewsRepository(news *models.News) error {
 	return config.DB.Create(news).Error
 }

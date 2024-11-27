@@ -16,6 +16,8 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
+
+// JWT token generation
 func GenerateJWT(id uint, username, email, role string) (string, error) {
 	claims := &Claims{
 		ID:       id,
@@ -32,6 +34,8 @@ func GenerateJWT(id uint, username, email, role string) (string, error) {
 	return token.SignedString([]byte(os.Getenv("JWT_KEY")))
 }
 
+
+// JWT token validation 
 func ValidateJWT(tokenString string) (*Claims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("JWT_KEY")), nil

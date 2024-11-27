@@ -5,12 +5,12 @@ import (
 	"news-go/models"
 )
 
-// AdminDeleteNews удаляет новость из базы данных
+// AdminDeleteNews deletes news from the database
 func AdminDeleteNews(newsID uint) error {
 	return config.DB.Model(&models.News{}).Where("id = ?", newsID).Delete(&models.News{}).Error
 }
 
-// BunUser меняет роль 
+// BunUser changes the role
 func BunUser(userID uint) error {
 	return config.DB.Model(&models.News{}).Where("id = ?", userID).Update("role", "BANNED").Error
 }

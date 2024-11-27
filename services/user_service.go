@@ -7,14 +7,14 @@ import (
 	"news-go/utils"
 )
 
-// CreateUser создает нового пользователя
+// CreateUser creates a new user
 func CreateUser(input *models.User) (map[string]string, string, error) {
 	// Валидация входных данных
 	if err := utils.ValidateUserInput(*input); err != nil {
 		return nil, "", err
 	}
 
-	// Хэширование пароля
+	// Hash the password
 	hashPassword, err := utils.HashPassword(input.Password)
 	if err != nil {
 		return nil, "", errors.New("invalid password, try another input password")
@@ -22,7 +22,7 @@ func CreateUser(input *models.User) (map[string]string, string, error) {
 
 	input.Password = hashPassword
 
-	// Создание нового пользователя
+	// Create a new user
 	newUserData, err := repositories.CreateUserInDB(input)
 	if err != nil {
 		return nil, "", errors.New("failed to create user in database")
@@ -34,7 +34,7 @@ func CreateUser(input *models.User) (map[string]string, string, error) {
 		return nil, "", errors.New(err.Error())
 	}
 
-	// Возвращаем данные пользователя
+	// Return user data
 	userData := map[string]string{
 		"username": input.Username,
 		"email":    input.Email,
@@ -43,25 +43,25 @@ func CreateUser(input *models.User) (map[string]string, string, error) {
 	return userData, accessToken, nil
 }
 
-// GetAllUsers возвращает всех пользователей
+// GetAllUsers returns all users
 func GetAllUsers() ([]models.User, error) {
 	return repositories.FindAllUsers()
 }
 
-// LoginUser выполняет аутентификацию пользователя и генерирует JWT
+// LoginUser performs user authentication and generates a JWT
 func LoginUser(username, password string) (map[string]string, string, error) {
-	// Поиск пользователя по имени
+	// Find the user by username
 	user, err := repositories.FindUserByUsername(username)
 	if err != nil {
 		return nil, "", errors.New("user not found")
 	}
 
-	// Проверка пароля
+	// Check the password
 	if !utils.CheckPasswordHash(password, user.Password) {
 		return nil, "", errors.New("invalid password")
 	}
 
-	// Генерация JWT
+	// Generate JWT
 	accessToken, err := utils.GenerateJWT(user.ID, user.Username, user.Email, string(user.Role))
 	if err != nil {
 		return nil, "", errors.New(err.Error())
@@ -76,43 +76,43 @@ func LoginUser(username, password string) (map[string]string, string, error) {
 	return userData, accessToken, nil
 }
 
-// ChangeUserPassword изменяет пароль пользователя
+// ChangeUserPassword changes the user's password
 func ChangeUserPassword(accessToken, oldPassword, newPassword string) error {
-	// Проверка токена JWT
+	// Validate the JWT
 	claims, err := utils.ValidateJWT(accessToken)
 	if err != nil {
 		return errors.New("invalid access token")
 	}
 
-	// Поиск пользователя по email
+	// Find the user by email
 	user, err := repositories.FindUserByEmail(claims.Email)
 	if err != nil {
 		return errors.New("user not found")
 	}
 
-	// Проверка старого пароля
+	// Check the old password
 	if !utils.CheckPasswordHash(oldPassword, user.Password) {
 		return errors.New("incorrect old password")
 	}
 
-	// Проверка силы нового пароля
+	// Check the strength of the new password
 	if !utils.IsStrongPassword(newPassword) {
 		return errors.New("new password is weak")
 	}
 
-	// Хэширование нового пароля
+	// Hash the new password
 	newHashPassword, err := utils.HashPassword(newPassword)
 	if err != nil {
 		return errors.New("failed to hash new password")
 	}
 
-	// Обновление пароля в базе данных
+	// Update the password in the database
 	data := repositories.UpdateUserPassword(user.ID, newHashPassword)
 
 	return data
 }
 
-// Создание информации о текущих сессиях в БД
+// CreateNewSession creates information about current sessions in the DB
 func CreateNewSession(userID uint, ip string, browser string) error {
 	if err := repositories.AddActiveSession(userID, ip, browser); err != nil {
 		return errors.New(err.Error())

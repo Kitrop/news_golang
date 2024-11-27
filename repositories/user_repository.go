@@ -54,7 +54,7 @@ func UpdateUserPassword(userID uint, newPassword string) error {
 	return config.DB.Model(&models.User{}).Where("id = ?", userID).Update("password", newPassword).Error
 }
 
-
-func 	AddActiveSession(userID uint, ip string, browser string) error {
+// Creates a new session record
+func AddActiveSession(userID uint, ip string, browser string) error {
 	return config.DB.Create(&models.ActiveSessions{UserID: userID, Ip: ip, Browser: browser}).Error
 }

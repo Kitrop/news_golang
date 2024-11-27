@@ -5,12 +5,12 @@ import (
 	"news-go/repositories"
 )
 
-// GetAllNews возвращает все новости, используя репозиторий
+// GetAllNews returns all news items using the repository
 func GetAllNews() ([]models.News, error) {
 	return repositories.GetAllNewsRepository()
 }
 
-// CreateNews добавляет новость через репозиторий
+// CreateNews adds a new news item via the repository
 func CreateNews(news *models.News) error {
 	return repositories.CreateNewsRepository(news)
 }

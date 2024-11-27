@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Роутер для админки 
+// RegisterAdminRoutes registers routes for admin functionalities
 func RegisterAdminRoutes(router *gin.RouterGroup) {
 	router.POST("/deleteNews", middleware.СheckIsAdmin, controller.DeleteNews)
 	router.GET("/bunUser", middleware.СheckIsAdmin, controller.BanUser)
