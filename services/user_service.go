@@ -112,6 +112,7 @@ func ChangeUserPassword(accessToken, oldPassword, newPassword string) error {
 	return data
 }
 
+// Создание информации о текущих сессиях в БД
 func CreateNewSession(userID uint, ip string, browser string) error {
 	if err := repositories.AddActiveSession(userID, ip, browser); err != nil {
 		return errors.New(err.Error())
