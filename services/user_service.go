@@ -2,11 +2,9 @@ package services
 
 import (
 	"errors"
-	"fmt"
 	"news-go/models"
 	"news-go/repositories"
 	"news-go/utils"
-	"time"
 )
 
 // CreateUser создает нового пользователя
@@ -70,6 +68,7 @@ func LoginUser(username, password string) (map[string]string, string, error) {
 	}
 
 	userData := map[string]string{
+		"userID": string(rune(user.ID)),
 		"username": user.Username,
 		"email":    user.Email,
 		"role":     string(user.Role),
@@ -80,53 +79,44 @@ func LoginUser(username, password string) (map[string]string, string, error) {
 // ChangeUserPassword изменяет пароль пользователя
 func ChangeUserPassword(accessToken, oldPassword, newPassword string) error {
 	// Проверка токена JWT
-	startTime := time.Now()
 	claims, err := utils.ValidateJWT(accessToken)
 	if err != nil {
 		return errors.New("invalid access token")
 	}
-	duration := time.Since(startTime).Seconds() * 1000 // миллисекунды
-	fmt.Println(duration)
 
 	// Поиск пользователя по email
-	startTime1 := time.Now()
 	user, err := repositories.FindUserByEmail(claims.Email)
 	if err != nil {
 		return errors.New("user not found")
 	}
-	duration1 := time.Since(startTime1).Seconds() * 1000 // миллисекунды
-	fmt.Println(duration1)
 
 	// Проверка старого пароля
-	startTime2 := time.Now()
 	if !utils.CheckPasswordHash(oldPassword, user.Password) {
 		return errors.New("incorrect old password")
 	}
-	duration2 := time.Since(startTime2).Seconds() * 1000 // миллисекунды
-	fmt.Println(duration2)
 
 	// Проверка силы нового пароля
-	startTime3 := time.Now()
 	if !utils.IsStrongPassword(newPassword) {
 		return errors.New("new password is weak")
 	}
-	duration3 := time.Since(startTime3).Seconds() * 1000 // миллисекунды
-	fmt.Println(duration3)
 
 	// Хэширование нового пароля
-	startTime4 := time.Now()
 	newHashPassword, err := utils.HashPassword(newPassword)
 	if err != nil {
 		return errors.New("failed to hash new password")
 	}
-	duration4 := time.Since(startTime4).Seconds() * 1000 // миллисекунды
-	fmt.Println(duration4)
 
 	// Обновление пароля в базе данных
-	startTime5 := time.Now()
 	data := repositories.UpdateUserPassword(user.ID, newHashPassword)
-	duration5 := time.Since(startTime5).Seconds() * 1000 // миллисекунды
-	fmt.Println(duration5)
 
 	return data
+}
+
+// Создание информации о текущих сессиях в БД
+func CreateNewSession(userID uint, ip string, browser string) error {
+	if err := repositories.AddActiveSession(userID, ip, browser); err != nil {
+		return errors.New(err.Error())
+	}
+
+	return nil
 }

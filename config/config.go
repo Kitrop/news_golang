@@ -11,7 +11,10 @@ import (
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
+var (
+	DB *gorm.DB
+	ClickDB *gorm.DB
+)
 
 func LoadEnv() {
 	err := godotenv.Load()
@@ -31,31 +34,24 @@ func ConnectDB() {
 	)
 
 	DB, err = gorm.Open(postgres.Open(dbURI), &gorm.Config{})
+
 	if err != nil {
-		log.Fatal("Could not connect to the database", err)
+			log.Fatal("Could not connect to the database", err)
 	}
 
-	err = DB.AutoMigrate(&models.News{})
-
-	if err != nil {
-		log.Fatal("Could not create migrate models: News", err)
+	if err := DB.AutoMigrate(&models.News{}); err != nil {
+		log.Fatal("Could not create migrate models: RequestMetric", err)
 	}
 
-	err = DB.AutoMigrate(&models.User{})
-
-	if err != nil {
-		log.Fatal("Could not create migrate models: User", err)
+	if err := DB.AutoMigrate(&models.User{}); err != nil {
+		log.Fatal("Could not create migrate models: RequestMetric", err)
 	}
 
-	err = DB.AutoMigrate(&models.Client_metadata{})
-
-	if err != nil {
-		log.Fatal("Could not create migrate models: Client_metadata", err)
+	if err := DB.AutoMigrate(&models.Client_metadata{}); err != nil {
+		log.Fatal("Could not create migrate models: RequestMetric", err)
 	}
 
-	err = DB.AutoMigrate(&models.RequestMetric{})
-
-	if err != nil {
+	if err := DB.AutoMigrate(&models.RequestMetric{}); err != nil {
 		log.Fatal("Could not create migrate models: RequestMetric", err)
 	}
 }

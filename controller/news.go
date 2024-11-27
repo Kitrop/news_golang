@@ -34,8 +34,8 @@ func CreateNewsController(c *gin.Context) {
 	news := &models.News{Text: input.Text}
 
 	if err := services.CreateNews(news); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
+
 	c.JSON(http.StatusCreated, gin.H{"message": "News created", "data": news})
 }

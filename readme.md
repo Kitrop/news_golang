@@ -35,6 +35,8 @@ News-Go is a robust and scalable news aggregator application built with Go and t
 
 - **🛡️ Middleware**  
   - Custom middleware for authentication and authorization.
+  - Middleware for collect user metadata 
+  - Middleware for perfomance monitor
 
 ---
 
