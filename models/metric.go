@@ -18,3 +18,11 @@ type RequestMetric struct {
 	ResponseTime float64   `gorm:"not null"`
 	Timestamp    time.Time `gorm:"default:current_timestamp"`
 }
+
+type ActiveSessions struct {
+	ID uint `gorm:"primaryKey"`
+	UserID uint `gorm:"primaryKey"`
+	Ip string `gorm:"not null"`
+	Browser 	string `gorm:"size:128; not null"` 
+	Active bool `gorm:"not null"` // Active session?
+}

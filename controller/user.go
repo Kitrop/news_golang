@@ -61,6 +61,8 @@ func LoginController(c *gin.Context) {
 		return
 	}
 
+	// services.CreateNewSession(number.(user["userID"]), c.ClientIP(), c.Request.Header.Get("User-Agent"))
+
 	// Установка JWT в cookies
 	c.SetCookie("accessToken", accessToken, 360000, "/", "localhost", false, true)
 	c.JSON(http.StatusOK, gin.H{"data": user, "accessToken": accessToken})
