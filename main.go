@@ -11,14 +11,18 @@ import (
 )
 
 func main() {
+	// DB and env connect
 	config.LoadEnv()
 	config.ConnectDB()
 
 	r := gin.Default()
 
+	// Middleware
+	r.Use(middleware.CorsMiddleware())
 	r.Use(middleware.GetAllClientData)
 	r.Use(middleware.PerformanceMonitor())
 	
+	// Routes
 	routes.RegisterUserRoutes(r.Group("/users"))
 	routes.RegisterNewsRoutes(r.Group("/news"))
 	routes.RegisterAdminRoutes(r.Group("/admin"))
